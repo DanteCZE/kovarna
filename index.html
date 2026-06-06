@@ -253,7 +253,7 @@
     <div class="modal-panel absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl w-11/12 max-w-5xl max-h-[90vh] flex flex-col">
         
         <div class="flex justify-between items-center p-5 border-b border-gray-200">
-            <h3 class="text-xl font-bold text-gray-800 dnd-font">Výběr Zdatností (Sloučené kategorie)</h3>
+            <h3 class="text-xl font-bold text-gray-800 dnd-font">Zdatnosti</h3>
             <div class="flex items-center space-x-4">
                 <span id="skillCounter" class="bg-gray-100 px-3 py-1 rounded text-sm font-bold text-gray-600">Vybráno: 0 / 5</span>
                 <button onclick="closeSkillModal()" class="text-gray-400 hover:text-gray-700">&times; Zavřít</button>
@@ -341,17 +341,27 @@
         "Dovednosti": [
             "Akrobacie", "Atletika", "Čachry", "Historie", "Klamání", "Lékařství", 
             "Mystika", "Náboženství", "Pátrání", "Plížení", "Přesvědčování", "Příroda", 
-            "Přežití", "Vhled", "Vnímání", "Vystupování", "Zacházení se zvířaty", "Zastrašování"
+            "Přežití", "Vhled", "Vnímání", "Vystupování/Umění", "Zacházení se zvířaty", "Zastrašování"
         ],
         "Nástroje a Vybavení": [
             "Alchymistické potřeby", "Barvířské potřeby", "Brašnářské náčiní", "Bylinkářská souprava", 
-            "Cínařské náčiní", "Herní sady", "Hrnčířské náčiní", "Hudební nástroje", "Kaligrafické potřeby", 
+            "Cínařské náčiní", "Herní sady", "Hrnčířské náčiní", "Hudební nástroj", "Kaligrafické potřeby", 
             "Kamenické náčiní", "Kartografické potřeby", "Kovářské náčiní", "Kuchařské náčiní", "Navigátorské pomůcky", 
             "Obuvnické náčiní", "Padělatelská souprava", "Pivovarnické potřeby", "Pozemní vozidla", "Řezbářské náčiní", 
             "Sada traviče", "Sklářské náčiní", "Souprava maskování", "Tkalcovské náčiní", "Truhlářské náčiní", 
             "Vodní plavidla", "Zlatnické náčiní", "Zlodějské náčiní"
         ]
     };
+
+    function toggleInstrumentInput(cb) {
+        const input = document.getElementById('instrumentInput');
+        if (cb.checked) {
+            input.classList.remove('hidden');
+            input.focus();
+        } else {
+            input.classList.add('hidden');
+        }
+    }
 
     function initSkillModal() {
         const container = document.getElementById('skillCategoriesContainer');
@@ -368,12 +378,24 @@
             gridDiv.className = `grid grid-cols-1 ${gridCols} gap-2`;
             
             skills.forEach(skill => {
-                gridDiv.innerHTML += `
-                    <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded transition">
-                        <input type="checkbox" value="${skill}" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount()">
-                        <span>${skill}</span>
-                    </label>
-                `;
+                if (skill === "Hudební nástroj") {
+                    gridDiv.innerHTML += `
+                        <div class="flex items-center space-x-1 text-sm hover:bg-gray-100 p-1 rounded transition">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="Hudební nástroj" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount(); toggleInstrumentInput(this)">
+                                <span>Hudební nástroj</span>
+                            </label>
+                            <input type="text" id="instrumentInput" class="border-b border-gray-400 bg-transparent text-xs w-20 focus:outline-none focus:border-green-600 hidden" placeholder="(jaký?)">
+                        </div>
+                    `;
+                } else {
+                    gridDiv.innerHTML += `
+                        <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded transition">
+                            <input type="checkbox" value="${skill}" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount()">
+                            <span>${skill}</span>
+                        </label>
+                    `;
+                }
             });
             
             catDiv.appendChild(gridDiv);
@@ -384,7 +406,22 @@
     function openSkillModal() {
         const currentSkills = document.getElementById('npcSkills').value.split(',').map(s => s.trim());
         document.querySelectorAll('.skill-checkbox').forEach(cb => {
-            cb.checked = currentSkills.includes(cb.value);
+            if (cb.value === "Hudební nástroj") {
+                const instMatch = currentSkills.find(s => s.startsWith("Hudební nástroj"));
+                cb.checked = !!instMatch;
+                const input = document.getElementById('instrumentInput');
+                if (input) {
+                    if (cb.checked) {
+                        input.classList.remove('hidden');
+                        const match = instMatch.match(/\((.*?)\)/);
+                        input.value = match ? match[1] : '';
+                    } else {
+                        input.classList.add('hidden');
+                    }
+                }
+            } else {
+                cb.checked = currentSkills.includes(cb.value);
+            }
         });
         updateSkillCount();
         document.getElementById('skillWarning').classList.add('hidden');
@@ -416,8 +453,16 @@
     }
 
     function saveSkills() {
-        const checked = Array.from(document.querySelectorAll('.skill-checkbox:checked')).map(i => i.value);
-        if (checked.length > 5) return; 
+        const checkedBoxes = Array.from(document.querySelectorAll('.skill-checkbox:checked'));
+        if (checkedBoxes.length > 5) return; 
+        
+        const checked = checkedBoxes.map(i => {
+            if (i.value === "Hudební nástroj") {
+                const inst = document.getElementById('instrumentInput').value.trim();
+                return inst ? `Hudební nástroj (${inst})` : "Hudební nástroj";
+            }
+            return i.value;
+        });
         document.getElementById('npcSkills').value = checked.join(', ');
         closeSkillModal();
     }
