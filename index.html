@@ -221,6 +221,13 @@
                 </div>
             </div>
 
+            <div class="flex flex-wrap justify-center gap-3 pt-6 mb-2 border-t border-gray-200">
+                <button type="button" onclick="clearForm(this)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">🗑️ Smazat vše</button>
+                <button type="button" onclick="exportJSON()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">💾 Uložit do JSON</button>
+                <button type="button" onclick="triggerImport()" class="bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">📂 Načíst z JSON</button>
+                <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(event)">
+            </div>
+
             <!-- Tlačítko Generovat -->
             <div class="text-center pt-2 pb-10">
                 <button type="button" onclick="generateAndPrint()" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:scale-105 text-xl w-full md:w-auto">
@@ -256,6 +263,11 @@
             <button onclick="saveSkills()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow">Potvrdit výběr</button>
         </div>
     </div>
+</div>
+
+<div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3 no-print">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg" class="font-medium">Zpráva</span>
 </div>
 
 <div id="printContainer" class="print-only"></div>
@@ -491,6 +503,107 @@
         }
 
         setTimeout(() => { window.print(); }, 500);
+    }
+
+    const formFields = [
+        'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
+        'npcConst', 'npcPower', 'npcSkills',
+        'ab1Name', 'ab1Uses', 'ab1Desc',
+        'ab2Name', 'ab2Uses', 'ab2Desc',
+        'ab3Name', 'ab3Uses', 'ab3Desc',
+        'ab4Name', 'ab4Uses', 'ab4Desc',
+        'ab5Name', 'ab5Uses', 'ab5Desc',
+        'ab6Name', 'ab6Uses', 'ab6Desc'
+    ];
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').innerText = msg;
+        document.getElementById('toastIcon').innerText = type === 'error' ? '❌' : '✅';
+        
+        toast.className = `fixed bottom-5 right-5 z-50 transform transition-all duration-300 px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3 no-print ${type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'} translate-y-20 opacity-0`;
+        
+        // Timeout pro zobrazení (nastartování CSS přechodu)
+        setTimeout(() => { toast.classList.remove('translate-y-20', 'opacity-0'); }, 10);
+        // Timeout pro skrytí po 3 sekundách
+        setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    let clearBtnTimeout;
+    function clearForm(btn) {
+        if (btn.innerText !== "⚠️ Potvrdit smazání") {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = "⚠️ Potvrdit smazání";
+            btn.classList.replace('bg-gray-200', 'bg-red-500');
+            btn.classList.replace('text-gray-700', 'text-white');
+            
+            clearBtnTimeout = setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.replace('bg-red-500', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-700');
+            }, 3000);
+        } else {
+            clearTimeout(clearBtnTimeout);
+            formFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                    else el.value = '';
+                }
+            });
+            document.getElementById('npcSkills').value = '';
+            
+            btn.innerHTML = "🗑️ Smazat vše";
+            btn.classList.replace('bg-red-500', 'bg-gray-200');
+            btn.classList.replace('text-white', 'text-gray-700');
+            showToast('Formulář byl úspěšně vymazán.', 'success');
+        }
+    }
+
+    function exportJSON() {
+        let data = {};
+        formFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) data[id] = el.value;
+        });
+        
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        
+        let fileName = (document.getElementById('npcName').value || "nove_npc").replace(/[\s\W-]+/g, '_').toLowerCase() + ".json";
+        anchor.setAttribute("download", fileName);
+        
+        document.body.appendChild(anchor); 
+        anchor.click();
+        anchor.remove();
+        showToast('Deník byl uložen na disk jako JSON.', 'success');
+    }
+
+    function triggerImport() {
+        document.getElementById('importFile').value = ''; 
+        document.getElementById('importFile').click();
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                formFields.forEach(id => {
+                    if (data[id] !== undefined && document.getElementById(id)) {
+                        document.getElementById(id).value = data[id];
+                    }
+                });
+                showToast('Deník byl úspěšně načten!', 'success');
+            } catch(err) {
+                showToast('Chyba! Soubor není platný export z Kovárny.', 'error');
+            }
+        };
+        reader.readAsText(file);
     }
 </script>
 
