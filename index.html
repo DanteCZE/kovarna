@@ -335,7 +335,7 @@
     lucide.createIcons();
 
     const skillCategories = {
-        "Vlastnosti / Záchranné hody": [
+        "Záchranné hody": [
             "Síla", "Obratnost", "Odolnost", "Inteligence", "Moudrost", "Charisma"
         ],
         "Dovednosti": [
@@ -343,18 +343,28 @@
             "Mystika", "Náboženství", "Pátrání", "Plížení", "Přesvědčování", "Příroda", 
             "Přežití", "Vhled", "Vnímání", "Vystupování/Umění", "Zacházení se zvířaty", "Zastrašování"
         ],
-        "Nástroje a Vybavení": [
-            "Alchymistické potřeby", "Barvířské potřeby", "Brašnářské náčiní", "Bylinkářská souprava", 
-            "Cínařské náčiní", "Herní sady", "Hrnčířské náčiní", "Hudební nástroj", "Kaligrafické potřeby", 
-            "Kamenické náčiní", "Kartografické potřeby", "Kovářské náčiní", "Kuchařské náčiní", "Navigátorské pomůcky", 
-            "Obuvnické náčiní", "Padělatelská souprava", "Pivovarnické potřeby", "Pozemní vozidla", "Řezbářské náčiní", 
-            "Sada traviče", "Sklářské náčiní", "Souprava maskování", "Tkalcovské náčiní", "Truhlářské náčiní", 
-            "Vodní plavidla", "Zlatnické náčiní", "Zlodějské náčiní"
+        "Pomůcky": [
+            "Bylinkářská souprava", "Navigační pomůcky", "Padělatelská souprava", 
+            "Souprava pro přestrojování", "Travičská souprava", "Zlodějské náčiní"
+        ],
+        "Řemeslnické nářadí": [
+            "Alchymistické suroviny", "Hrnčířské nástroje", "Kaligrafické potřeby", 
+            "Kartografické pomůcky", "Klenotnické nářadí", "Kovářské nástroje", 
+            "Koželužnické pomůcky", "Kuchařské nástroje", "Kutilské nářadí", 
+            "Malířské potřeby", "Pivovarnické suroviny", "Řezbářské nástroje", 
+            "Sklenářské nástroje", "Ševcovské nářadí", "Tesařské nástroje", 
+            "Tkalcovské potřeby", "Zednické nářadí"
+        ],
+        "Dopravní prostředky": [
+            "Lodě", "Vozidla"
+        ],
+        "Zábava a Hry": [
+            "Hudební nástroj", "Herní sada"
         ]
     };
 
-    function toggleInstrumentInput(cb) {
-        const input = document.getElementById('instrumentInput');
+    function toggleExtraInput(cb, inputId) {
+        const input = document.getElementById(inputId);
         if (cb.checked) {
             input.classList.remove('hidden');
             input.focus();
@@ -373,19 +383,21 @@
             catDiv.innerHTML = `<h4 class="font-bold text-gray-700 border-b border-gray-300 mb-3 pb-1">${category}</h4>`;
             
             const gridDiv = document.createElement('div');
-            // Menší kategorie na 3 sloupce, Nástroje klidně na 4 sloupce pro přehlednost
-            const gridCols = category === "Nástroje a Vybavení" ? "sm:grid-cols-2 md:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3";
+            // Menší kategorie na 3 sloupce, velké kategorie dynamicky na 4 sloupce pro přehlednost
+            const gridCols = skills.length > 10 ? "sm:grid-cols-2 md:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3";
             gridDiv.className = `grid grid-cols-1 ${gridCols} gap-2`;
             
             skills.forEach(skill => {
-                if (skill === "Hudební nástroj") {
+                if (skill === "Hudební nástroj" || skill === "Herní sada") {
+                    const inputId = skill === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                    const placeholder = skill === "Hudební nástroj" ? "(jaký?)" : "(jaká?)";
                     gridDiv.innerHTML += `
                         <div class="flex items-center space-x-1 text-sm hover:bg-gray-100 p-1 rounded transition">
                             <label class="flex items-center space-x-2 cursor-pointer">
-                                <input type="checkbox" value="Hudební nástroj" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount(); toggleInstrumentInput(this)">
-                                <span>Hudební nástroj</span>
+                                <input type="checkbox" value="${skill}" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount(); toggleExtraInput(this, '${inputId}')">
+                                <span>${skill}</span>
                             </label>
-                            <input type="text" id="instrumentInput" class="border-b border-gray-400 bg-transparent text-xs w-20 focus:outline-none focus:border-green-600 hidden" placeholder="(jaký?)">
+                            <input type="text" id="${inputId}" class="border-b border-gray-400 bg-transparent text-xs w-20 focus:outline-none focus:border-green-600 hidden" placeholder="${placeholder}">
                         </div>
                     `;
                 } else {
@@ -406,10 +418,12 @@
     function openSkillModal() {
         const currentSkills = document.getElementById('npcSkills').value.split(',').map(s => s.trim());
         document.querySelectorAll('.skill-checkbox').forEach(cb => {
-            if (cb.value === "Hudební nástroj") {
-                const instMatch = currentSkills.find(s => s.startsWith("Hudební nástroj"));
+            if (cb.value === "Hudební nástroj" || cb.value === "Herní sada") {
+                const matchPrefix = cb.value;
+                const inputId = cb.value === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                const instMatch = currentSkills.find(s => s.startsWith(matchPrefix));
                 cb.checked = !!instMatch;
-                const input = document.getElementById('instrumentInput');
+                const input = document.getElementById(inputId);
                 if (input) {
                     if (cb.checked) {
                         input.classList.remove('hidden');
@@ -457,11 +471,16 @@
         if (checkedBoxes.length > 5) return; 
         
         const checked = checkedBoxes.map(i => {
-            if (i.value === "Hudební nástroj") {
-                const inst = document.getElementById('instrumentInput').value.trim();
-                return inst ? `Hudební nástroj (${inst})` : "Hudební nástroj";
+            // Logika pro hudební nástroje a herní sady
+            if (i.value === "Hudební nástroj" || i.value === "Herní sada") {
+                const inputId = i.value === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                const extraVal = document.getElementById(inputId).value.trim();
+                return extraVal ? `${i.value} (${extraVal})` : i.value;
             }
-            return i.value;
+            
+            // Logika pro záchranné hody
+            const isSaveThrow = skillCategories["Záchranné hody"].includes(i.value);
+            return isSaveThrow ? `Záchranný hod na ${i.value}` : i.value;
         });
         document.getElementById('npcSkills').value = checked.join(', ');
         closeSkillModal();
