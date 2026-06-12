@@ -191,7 +191,15 @@
                                 <option value="Pasivní">Pasivní</option>
                             </select>
                             <input type="text" id="ab1Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Drcení válečným kladivem" required placeholder="Název schopnosti">
-                            <input type="number" id="ab1Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab1TrackType" onchange="toggleTrack(1)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab1TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max">
+                                <input type="text" id="ab1TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab1Desc" class="w-full p-2 border border-gray-300 rounded h-20 text-sm focus:ring-yellow-500 focus:border-yellow-500" required>{-} Kladivo s duněním mine cíl.
 {0} Základní úspěch. Udělí {LOW} drtivého poškození.
@@ -209,7 +217,15 @@
                                 <option value="Pasivní" selected>Pasivní</option>
                             </select>
                             <input type="text" id="ab2Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Dědictví kamene" placeholder="Název schopnosti">
-                            <input type="number" id="ab2Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab2TrackType" onchange="toggleTrack(2)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab2TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max">
+                                <input type="text" id="ab2TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab2Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby se automaticky vyzná v podzemí a kovech. Nikdy se neztratí v jeskyních a rozezná hodnotu nerostů.</textarea>
                     </div>
@@ -225,7 +241,15 @@
                                 <option value="Pasivní">Pasivní</option>
                             </select>
                             <input type="text" id="ab3Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Kamenný štít" placeholder="Název schopnosti">
-                            <input type="number" id="ab3Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab3TrackType" onchange="toggleTrack(3)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none">Bez omezení</option>
+                                    <option value="uses" selected>Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab3TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" value="1">
+                                <input type="text" id="ab3TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab3Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Jednou za kolo, když je spojenec do 5 stop zasažen, přesměruje zásah na sebe (srovná se s jejími Prahy zranění).</textarea>
                     </div>
@@ -241,7 +265,15 @@
                                 <option value="Pasivní" selected>Pasivní</option>
                             </select>
                             <input type="text" id="ab4Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Nezastavitelný postup" placeholder="Název schopnosti">
-                            <input type="number" id="ab4Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab4TrackType" onchange="toggleTrack(4)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab4TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max">
+                                <input type="text" id="ab4TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab4Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby ignoruje postihy za těžký terén a žádný nepřítel ji nemůže silou odtlačit ani pohnout z místa.</textarea>
                     </div>
@@ -257,7 +289,15 @@
                                 <option value="Pasivní" selected>Pasivní</option>
                             </select>
                             <input type="text" id="ab5Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Lavina úderů" placeholder="Název schopnosti">
-                            <input type="number" id="ab5Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab5TrackType" onchange="toggleTrack(5)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab5TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max">
+                                <input type="text" id="ab5TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_LOW} poškození i dalšímu nepříteli v dosahu.</textarea>
                     </div>
@@ -273,7 +313,15 @@
                                 <option value="Pasivní" selected>Pasivní</option>
                             </select>
                             <input type="text" id="ab6Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Žulové srdce" placeholder="Název schopnosti">
-                            <input type="number" id="ab6Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab6TrackType" onchange="toggleTrack(6)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none">Bez omezení</option>
+                                    <option value="uses" selected>Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab6TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" value="1">
+                                <input type="text" id="ab6TrackRecharge" class="hidden w-24 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" placeholder="např. 5-6">
+                            </div>
                         </div>
                         <textarea id="ab6Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby je nezničitelná. V každém boji automaticky ignoruje úplně první ztrátu bodů Zdraví, ať je rána jakkoliv velká.</textarea>
                     </div>
@@ -353,7 +401,6 @@
         self.addEventListener('install', (e) => { self.skipWaiting(); });
         self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
         self.addEventListener('fetch', (e) => {
-            // Jednoduchý fetch handler, aby PWA prošlo instalací
             e.respondWith(fetch(e.request).catch(() => new Response('Offline mód. Aplikace běží, ale vyžaduje prvotní načtení souboru.')));
         });
     `;
@@ -383,6 +430,24 @@
 
     // Inicializace Lucide ikon
     lucide.createIcons();
+
+    // --- Přepínání typů sledování pro Schopnosti ---
+    function toggleTrack(num) {
+        const type = document.getElementById(`ab${num}TrackType`).value;
+        const usesInput = document.getElementById(`ab${num}TrackUses`);
+        const rechargeInput = document.getElementById(`ab${num}TrackRecharge`);
+        
+        if (type === 'uses') {
+            usesInput.classList.remove('hidden');
+            rechargeInput.classList.add('hidden');
+        } else if (type === 'recharge') {
+            usesInput.classList.add('hidden');
+            rechargeInput.classList.remove('hidden');
+        } else {
+            usesInput.classList.add('hidden');
+            rechargeInput.classList.add('hidden');
+        }
+    }
 
     // --- Práce s obrázkem ---
     function updateImageUI(src) {
@@ -582,6 +647,9 @@
 
     window.onload = function() {
         initSkillModal();
+        for(let i=1; i<=6; i++) {
+            toggleTrack(i);
+        }
     };
 
     function generateAndPrint() {
@@ -602,15 +670,23 @@
             const nameEl = document.getElementById(`ab${i}Name`);
             const typeEl = document.getElementById(`ab${i}Type`);
             const descEl = document.getElementById(`ab${i}Desc`);
-            const usesEl = document.getElementById(`ab${i}Uses`);
+            const trackTypeEl = document.getElementById(`ab${i}TrackType`);
+            const trackUsesEl = document.getElementById(`ab${i}TrackUses`);
+            const trackRechEl = document.getElementById(`ab${i}TrackRecharge`);
+            
             if (nameEl && descEl && nameEl.value.trim() !== '') {
-                const usesCount = usesEl && usesEl.value ? parseInt(usesEl.value) : 0;
+                const trackType = trackTypeEl ? trackTypeEl.value : 'none';
+                const trackUses = trackUsesEl && trackUsesEl.value ? parseInt(trackUsesEl.value) : 0;
+                const trackRecharge = trackRechEl ? trackRechEl.value.trim() : '';
+                
                 data.abilities.push({ 
                     lvl: abilityLevels[i-1], 
                     name: nameEl.value.trim(), 
                     type: typeEl ? typeEl.value : 'Pasivní',
                     desc: descEl.value.trim(),
-                    uses: usesCount
+                    trackType: trackType,
+                    trackUses: trackUses,
+                    trackRecharge: trackRecharge
                 });
             }
         }
@@ -714,13 +790,19 @@
                     <div class="space-y-2">
                         ${unlockedAbilities.map(ab => {
                             let usesHtml = '';
-                            if (ab.uses > 0) {
+                            if (ab.trackType === 'uses' && ab.trackUses > 0) {
                                 let boxes = '';
-                                for(let k=0; k<ab.uses; k++) {
+                                for(let k=0; k<ab.trackUses; k++) {
                                     boxes += '<span class="inline-block w-2.5 h-2.5 border border-gray-500 rounded-sm ml-1 bg-white shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></span>';
                                 }
                                 usesHtml = `<span class="float-right flex items-center text-[10px] text-gray-500 font-sans font-normal mt-0.5 tracking-wide">Použití: ${boxes}</span>`;
+                            } else if (ab.trackType === 'recharge' && ab.trackRecharge) {
+                                usesHtml = `<span class="float-right flex items-center text-[10px] text-gray-500 font-sans font-normal mt-0.5 tracking-wide">
+                                    Nabití (${ab.trackRecharge}): 
+                                    <span class="inline-block w-2.5 h-2.5 border border-gray-500 rounded-sm ml-1 bg-white shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></span>
+                                </span>`;
                             }
+                            
                             return `
                                 <div class="ability-block avoid-break">
                                     <h4 class="ability-title font-bold dnd-font text-gray-800 border-b border-gray-100 pb-0.5 mb-1">
@@ -744,12 +826,12 @@
     const formFields = [
         'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
         'npcConst', 'npcSkills', 'npcImageData', 'npcImageUrl',
-        'ab1Type', 'ab1Name', 'ab1Uses', 'ab1Desc',
-        'ab2Type', 'ab2Name', 'ab2Uses', 'ab2Desc',
-        'ab3Type', 'ab3Name', 'ab3Uses', 'ab3Desc',
-        'ab4Type', 'ab4Name', 'ab4Uses', 'ab4Desc',
-        'ab5Type', 'ab5Name', 'ab5Uses', 'ab5Desc',
-        'ab6Type', 'ab6Name', 'ab6Uses', 'ab6Desc'
+        'ab1Type', 'ab1Name', 'ab1TrackType', 'ab1TrackUses', 'ab1TrackRecharge', 'ab1Desc',
+        'ab2Type', 'ab2Name', 'ab2TrackType', 'ab2TrackUses', 'ab2TrackRecharge', 'ab2Desc',
+        'ab3Type', 'ab3Name', 'ab3TrackType', 'ab3TrackUses', 'ab3TrackRecharge', 'ab3Desc',
+        'ab4Type', 'ab4Name', 'ab4TrackType', 'ab4TrackUses', 'ab4TrackRecharge', 'ab4Desc',
+        'ab5Type', 'ab5Name', 'ab5TrackType', 'ab5TrackUses', 'ab5TrackRecharge', 'ab5Desc',
+        'ab6Type', 'ab6Name', 'ab6TrackType', 'ab6TrackUses', 'ab6TrackRecharge', 'ab6Desc'
     ];
 
     function showToast(msg, type = 'success') {
@@ -781,7 +863,10 @@
             formFields.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
-                    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+                    if (el.tagName === 'SELECT') {
+                        el.selectedIndex = 0;
+                        if(id.includes('TrackType')) toggleTrack(id.replace(/[^\d]/g, ''));
+                    }
                     else el.value = '';
                 }
             });
@@ -828,9 +913,22 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
+                
+                // Zpětná kompatibilita pro staré uložené deníky, kde bylo jen pole "uses" (číslo)
+                for(let i=1; i<=6; i++) {
+                    if (data[`ab${i}Uses`] !== undefined && data[`ab${i}TrackType`] === undefined) {
+                        data[`ab${i}TrackType`] = parseInt(data[`ab${i}Uses`]) > 0 ? 'uses' : 'none';
+                        data[`ab${i}TrackUses`] = data[`ab${i}Uses`];
+                    }
+                }
+
                 formFields.forEach(id => {
                     if (data[id] !== undefined && document.getElementById(id)) {
                         document.getElementById(id).value = data[id];
+                        if (id.includes('TrackType')) {
+                            const num = id.replace(/[^\d]/g, '');
+                            toggleTrack(num);
+                        }
                     }
                 });
                 
