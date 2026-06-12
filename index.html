@@ -129,24 +129,14 @@
             </div>
 
             <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-sm">
-                <h2 class="text-2xl font-bold text-blue-900 mb-4 dnd-font">2. Profil Role (Matematika)</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium mb-1 text-blue-800">Konstituce (Obrana a Výdrž)</label>
-                        <select id="npcConst" class="w-full p-2.5 border border-blue-300 rounded bg-white focus:ring-blue-500 focus:border-blue-500">
-                            <option value="2">Křehká (AC 13, Základ Zdraví 2)</option>
-                            <option value="3">Střední (AC 15, Základ Zdraví 3)</option>
-                            <option value="4" selected>Odolná (AC 18, Základ Zdraví 4)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1 text-blue-800">Síla schopností (Poškození / Léčení)</label>
-                        <select id="npcPower" class="w-full p-2.5 border border-blue-300 rounded bg-white focus:ring-blue-500 focus:border-blue-500">
-                            <option value="1" selected>Nízká: 5 + Úroveň (Tankové)</option>
-                            <option value="2">Střední: 5 + (Úroveň × 2) (Univerzálové)</option>
-                            <option value="3">Vysoká: 5 + (Úroveň × 3) (Mágové / Léčitelé)</option>
-                        </select>
-                    </div>
+                <h2 class="text-2xl font-bold text-blue-900 mb-4 dnd-font">2. Obrana a Výdrž</h2>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-blue-800">Konstituce (Třída zbroje a Kapacita Zdraví)</label>
+                    <select id="npcConst" class="w-full p-2.5 border border-blue-300 rounded bg-white focus:ring-blue-500 focus:border-blue-500">
+                        <option value="2">Křehká (AC 13, Základ Zdraví 2)</option>
+                        <option value="3">Střední (AC 15, Základ Zdraví 3)</option>
+                        <option value="4" selected>Odolná (AC 18, Základ Zdraví 4)</option>
+                    </select>
                 </div>
             </div>
 
@@ -155,14 +145,15 @@
                     <h2 class="text-2xl font-bold text-green-900 dnd-font">3. Zdatnosti (5 max)</h2>
                     <button type="button" onclick="openSkillModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow transition text-sm font-medium">Vybrat ze seznamu</button>
                 </div>
-                <input type="text" id="npcSkills" class="w-full p-2.5 border border-green-300 rounded bg-gray-50 text-gray-600 cursor-not-allowed" placeholder="Klikněte na tlačítko pro výběr zdatností..." readonly value="Síla, Odolnost, Atletika, Přežití, Kovářské náčiní">
+                <input type="text" id="npcSkills" class="w-full p-2.5 border border-green-300 rounded bg-gray-50 text-gray-600 cursor-not-allowed" placeholder="Klikněte na tlačítko pro výběr zdatností..." readonly value="Záchranný hod na Sílu, Záchranný hod na Odolnost, Atletika, Přežití, Kovářské nástroje">
             </div>
 
             <div class="bg-yellow-50 p-5 rounded-lg border border-yellow-200 shadow-sm">
                 <h2 class="text-2xl font-bold text-yellow-800 mb-2 dnd-font">4. Schopnosti a Akce</h2>
                 <p class="text-sm text-yellow-700 mb-4 bg-yellow-100 p-3 rounded border border-yellow-300">
                     Seskupeno do 6 schopností. Používejte značky pro formátování v PDF:<br>
-                    Ikony: <code class="font-bold">{-}</code>, <code class="font-bold">{0}</code>, <code class="font-bold">{+}</code> | Matematika: <code class="font-bold">{POWER}</code> (Plná síla), <code class="font-bold">{HALF_POWER}</code> (Polovina)
+                    Ikony: <code class="font-bold bg-white px-1 rounded border border-gray-300">{-}</code>, <code class="font-bold bg-white px-1 rounded border border-gray-300">{0}</code>, <code class="font-bold bg-white px-1 rounded border border-gray-300">{+}</code><br>
+                    Síla: <code class="font-bold bg-white px-1 rounded border border-gray-300">{LOW}</code> (Nízká), <code class="font-bold bg-white px-1 rounded border border-gray-300">{MID}</code> (Střední), <code class="font-bold bg-white px-1 rounded border border-gray-300">{HIGH}</code> (Vysoká). Pro poloviční hodnoty přidejte HALF_ (např. <code class="font-bold bg-white px-1 rounded border border-gray-300">{HALF_LOW}</code>).
                 </p>
                 
                 <div class="space-y-4">
@@ -174,8 +165,8 @@
                             <input type="number" id="ab1Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
                         <textarea id="ab1Desc" class="w-full p-2 border border-gray-300 rounded h-20 text-sm" required>{-} Kladivo s duněním mine cíl.
-{0} Základní úspěch. Udělí {POWER} drtivého poškození.
-{+} Úspěch s efektem (Zemětřesení). Udělí {POWER} poškození a srazí cíl k zemi (Prone), čímž získá útoky nablízko vůči němu Výhodu.</textarea>
+{0} Základní úspěch. Udělí {LOW} drtivého poškození.
+{+} Úspěch s efektem (Zemětřesení). Udělí {LOW} poškození a srazí cíl k zemi (Prone), čímž získá útoky nablízko vůči němu Výhodu.</textarea>
                     </div>
                     
                     <!-- Úroveň 1 (Schopnost 2) -->
@@ -215,7 +206,7 @@
                             <input type="text" id="ab5Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Lavina úderů (Pasivní)" placeholder="Název schopnosti">
                             <input type="number" id="ab5Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_POWER} poškození i dalšímu nepříteli v dosahu.</textarea>
+                        <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_LOW} poškození i dalšímu nepříteli v dosahu.</textarea>
                     </div>
 
                     <!-- Úroveň 17 -->
@@ -434,7 +425,7 @@
                     }
                 }
             } else {
-                cb.checked = currentSkills.includes(cb.value);
+                cb.checked = currentSkills.includes(cb.value) || currentSkills.includes(`Záchranný hod na ${cb.value}`);
             }
         });
         updateSkillCount();
@@ -498,7 +489,6 @@
             speed: document.getElementById('npcSpeed').value || '30 stop',
             passive: document.getElementById('npcPassive').value || '-',
             constType: parseInt(document.getElementById('npcConst').value),
-            powerType: parseInt(document.getElementById('npcPower').value),
             skills: document.getElementById('npcSkills').value || 'Žádné zdatnosti',
             abilities: []
         };
@@ -532,17 +522,24 @@
             const thresholdCrit = 10 + (level * 2);
             const thresholdNormalText = `${thresholdIgnore + 1} až ${thresholdCrit - 1}`;
             
-            let powerCalc = 0;
-            if (data.powerType === 1) powerCalc = 5 + level;
-            if (data.powerType === 2) powerCalc = 5 + (level * 2);
-            if (data.powerType === 3) powerCalc = 5 + (level * 3);
-            const halfPower = Math.floor(powerCalc / 2);
+            // Matematika pro nové tagy síly schopností
+            const lowPower = 5 + level;
+            const midPower = 5 + (level * 2);
+            const highPower = 5 + (level * 3);
 
             const parseTags = (text) => {
                 if(!text) return '';
                 return text
-                    .replace(/{POWER}/g, powerCalc)
-                    .replace(/{HALF_POWER}/g, halfPower)
+                    .replace(/{LOW}/g, lowPower)
+                    .replace(/{MID}/g, midPower)
+                    .replace(/{HIGH}/g, highPower)
+                    .replace(/{HALF_LOW}/g, Math.floor(lowPower / 2))
+                    .replace(/{HALF_MID}/g, Math.floor(midPower / 2))
+                    .replace(/{HALF_HIGH}/g, Math.floor(highPower / 2))
+                    // Zpětná kompatibilita pro staré uložené deníky
+                    .replace(/{POWER}/g, midPower)
+                    .replace(/{HALF_POWER}/g, Math.floor(midPower / 2))
+                    
                     .replace(/\{-\}/g, '<span class="font-bold inline-block px-1 text-center text-red-600 bg-red-100 rounded border border-red-200 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[-]</span>')
                     .replace(/\{0\}/g, '<span class="font-bold inline-block px-1 text-center text-gray-800 bg-gray-200 rounded border border-gray-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[0]</span>')
                     .replace(/\{\+\}/g, '<span class="font-bold inline-block px-1 text-center text-green-700 bg-green-100 rounded border border-green-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[+]</span>')
@@ -632,7 +629,7 @@
 
     const formFields = [
         'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
-        'npcConst', 'npcPower', 'npcSkills',
+        'npcConst', 'npcSkills',
         'ab1Name', 'ab1Uses', 'ab1Desc',
         'ab2Name', 'ab2Uses', 'ab2Desc',
         'ab3Name', 'ab3Uses', 'ab3Desc',
