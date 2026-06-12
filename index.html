@@ -183,11 +183,17 @@
                     <!-- Úroveň 1 (Schopnost 1) -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">1. Schopnost / Útok (Úroveň 1)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab1Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Drcení válečným kladivem (Akce)" required placeholder="Název schopnosti">
-                            <input type="number" id="ab1Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab1Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce" selected>Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní">Pasivní</option>
+                            </select>
+                            <input type="text" id="ab1Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Drcení válečným kladivem" required placeholder="Název schopnosti">
+                            <input type="number" id="ab1Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab1Desc" class="w-full p-2 border border-gray-300 rounded h-20 text-sm" required>{-} Kladivo s duněním mine cíl.
+                        <textarea id="ab1Desc" class="w-full p-2 border border-gray-300 rounded h-20 text-sm focus:ring-yellow-500 focus:border-yellow-500" required>{-} Kladivo s duněním mine cíl.
 {0} Základní úspěch. Udělí {LOW} drtivého poškození.
 {+} Úspěch s efektem (Zemětřesení). Udělí {LOW} poškození a srazí cíl k zemi (Prone), čímž získá útoky nablízko vůči němu Výhodu.</textarea>
                     </div>
@@ -195,51 +201,81 @@
                     <!-- Úroveň 1 (Schopnost 2) -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">2. Schopnost (Úroveň 1)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab2Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Dědictví kamene (Pasivní)" placeholder="Název schopnosti">
-                            <input type="number" id="ab2Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab2Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab2Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Dědictví kamene" placeholder="Název schopnosti">
+                            <input type="number" id="ab2Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab2Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Ruby se automaticky vyzná v podzemí a kovech. Nikdy se neztratí v jeskyních a rozezná hodnotu nerostů.</textarea>
+                        <textarea id="ab2Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby se automaticky vyzná v podzemí a kovech. Nikdy se neztratí v jeskyních a rozezná hodnotu nerostů.</textarea>
                     </div>
 
                     <!-- Úroveň 5 -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">3. Schopnost (Úroveň 5)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab3Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Kamenný štít (Reakce)" placeholder="Název schopnosti">
-                            <input type="number" id="ab3Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab3Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce" selected>Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní">Pasivní</option>
+                            </select>
+                            <input type="text" id="ab3Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Kamenný štít" placeholder="Název schopnosti">
+                            <input type="number" id="ab3Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab3Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Jednou za kolo, když je spojenec do 5 stop zasažen, přesměruje zásah na sebe (srovná se s jejími Prahy zranění).</textarea>
+                        <textarea id="ab3Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Jednou za kolo, když je spojenec do 5 stop zasažen, přesměruje zásah na sebe (srovná se s jejími Prahy zranění).</textarea>
                     </div>
 
                     <!-- Úroveň 9 -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">4. Schopnost (Úroveň 9)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab4Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Nezastavitelný postup (Pasivní)" placeholder="Název schopnosti">
-                            <input type="number" id="ab4Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab4Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab4Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Nezastavitelný postup" placeholder="Název schopnosti">
+                            <input type="number" id="ab4Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab4Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Ruby ignoruje postihy za těžký terén a žádný nepřítel ji nemůže silou odtlačit ani pohnout z místa.</textarea>
+                        <textarea id="ab4Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby ignoruje postihy za těžký terén a žádný nepřítel ji nemůže silou odtlačit ani pohnout z místa.</textarea>
                     </div>
 
                     <!-- Úroveň 13 -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">5. Schopnost (Úroveň 13)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab5Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Lavina úderů (Pasivní)" placeholder="Název schopnosti">
-                            <input type="number" id="ab5Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab5Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab5Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Lavina úderů" placeholder="Název schopnosti">
+                            <input type="number" id="ab5Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_LOW} poškození i dalšímu nepříteli v dosahu.</textarea>
+                        <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_LOW} poškození i dalšímu nepříteli v dosahu.</textarea>
                     </div>
 
                     <!-- Úroveň 17 -->
                     <div class="bg-white p-3 rounded border border-yellow-300">
                         <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">6. Schopnost (Úroveň 17)</label>
-                        <div class="flex space-x-2 mb-2">
-                            <input type="text" id="ab6Name" class="w-full p-2 border border-gray-300 rounded font-medium" value="◆ Žulové srdce (Pasivní)" placeholder="Název schopnosti">
-                            <input type="number" id="ab6Uses" class="w-24 p-2 border border-gray-300 rounded text-sm bg-gray-50" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab6Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab6Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Žulové srdce" placeholder="Název schopnosti">
+                            <input type="number" id="ab6Uses" class="w-full sm:w-24 shrink-0 p-2 border border-gray-300 rounded text-sm bg-gray-50 focus:ring-yellow-500 focus:border-yellow-500" placeholder="Použití" value="1" min="1" max="10" title="Počet použití (nepovinné)">
                         </div>
-                        <textarea id="ab6Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm">Ruby je nezničitelná. V každém boji automaticky ignoruje úplně první ztrátu bodů Zdraví, ať je rána jakkoliv velká.</textarea>
+                        <textarea id="ab6Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby je nezničitelná. V každém boji automaticky ignoruje úplně první ztrátu bodů Zdraví, ať je rána jakkoliv velká.</textarea>
                     </div>
                 </div>
             </div>
@@ -564,6 +600,7 @@
         const abilityLevels = [1, 1, 5, 9, 13, 17];
         for(let i=1; i<=6; i++) {
             const nameEl = document.getElementById(`ab${i}Name`);
+            const typeEl = document.getElementById(`ab${i}Type`);
             const descEl = document.getElementById(`ab${i}Desc`);
             const usesEl = document.getElementById(`ab${i}Uses`);
             if (nameEl && descEl && nameEl.value.trim() !== '') {
@@ -571,6 +608,7 @@
                 data.abilities.push({ 
                     lvl: abilityLevels[i-1], 
                     name: nameEl.value.trim(), 
+                    type: typeEl ? typeEl.value : 'Pasivní',
                     desc: descEl.value.trim(),
                     uses: usesCount
                 });
@@ -685,7 +723,11 @@
                             }
                             return `
                                 <div class="ability-block avoid-break">
-                                    <h4 class="ability-title font-bold dnd-font text-gray-800 border-b border-gray-100 pb-0.5 mb-1">${ab.name} ${usesHtml}</h4>
+                                    <h4 class="ability-title font-bold dnd-font text-gray-800 border-b border-gray-100 pb-0.5 mb-1">
+                                        ${ab.name} 
+                                        <span class="text-xs font-normal text-gray-500 font-sans italic ml-1">(${ab.type})</span>
+                                        ${usesHtml}
+                                    </h4>
                                     <p class="text-gray-800 text-xs leading-relaxed">${parseTags(ab.desc)}</p>
                                 </div>
                             `;
@@ -702,12 +744,12 @@
     const formFields = [
         'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
         'npcConst', 'npcSkills', 'npcImageData', 'npcImageUrl',
-        'ab1Name', 'ab1Uses', 'ab1Desc',
-        'ab2Name', 'ab2Uses', 'ab2Desc',
-        'ab3Name', 'ab3Uses', 'ab3Desc',
-        'ab4Name', 'ab4Uses', 'ab4Desc',
-        'ab5Name', 'ab5Uses', 'ab5Desc',
-        'ab6Name', 'ab6Uses', 'ab6Desc'
+        'ab1Type', 'ab1Name', 'ab1Uses', 'ab1Desc',
+        'ab2Type', 'ab2Name', 'ab2Uses', 'ab2Desc',
+        'ab3Type', 'ab3Name', 'ab3Uses', 'ab3Desc',
+        'ab4Type', 'ab4Name', 'ab4Uses', 'ab4Desc',
+        'ab5Type', 'ab5Name', 'ab5Uses', 'ab5Desc',
+        'ab6Type', 'ab6Name', 'ab6Uses', 'ab6Desc'
     ];
 
     function showToast(msg, type = 'success') {
