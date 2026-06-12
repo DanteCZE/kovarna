@@ -44,7 +44,7 @@
 
             .print-header { 
                 border-bottom: 2px solid #b91c1c; 
-                padding-bottom: 4px; 
+                padding-bottom: 6px; 
                 margin-bottom: 12px; 
                 page-break-after: avoid; 
             }
@@ -125,6 +125,29 @@
                         <label class="block text-sm font-medium mb-1 text-gray-700">Pasivní rasové vlastnosti (Volitelné)</label>
                         <input type="text" id="npcPassive" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. Vidění ve tmě (60 stop)" value="Vidění ve tmě (60 stop), Trpasličí odolnost proti jedu.">
                     </div>
+
+                    <!-- Nahrávání obrázku -->
+                    <div class="md:col-span-2 border-t border-gray-200 pt-4 mt-2">
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Portrét NPC (Volitelné)</label>
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 border border-gray-300 rounded overflow-hidden bg-white shadow-inner flex-shrink-0 flex items-center justify-center relative">
+                                <img id="npcImagePreview" src="" class="hidden w-full h-full object-cover absolute inset-0 z-10">
+                                <i data-lucide="image" id="npcImagePlaceholder" class="w-8 h-8 text-gray-300"></i>
+                            </div>
+                            <div class="flex-1 w-full space-y-2">
+                                <input type="url" id="npcImageUrl" placeholder="Vložte URL obrázku (http://...)" class="w-full p-2 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500 text-sm" oninput="setImageFromUrl(this.value)">
+                                <div class="flex items-center space-x-2 bg-white p-1 rounded border border-gray-200">
+                                    <span class="text-sm text-gray-500 px-2 font-medium">Nebo soubor:</span>
+                                    <input type="file" id="npcImageFile" accept="image/*" class="w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition cursor-pointer" onchange="setImageFromFile(event)">
+                                </div>
+                                <input type="hidden" id="npcImageData" value="">
+                                <button type="button" id="clearImageBtn" onclick="clearImage()" class="text-xs font-bold text-red-600 hover:text-red-800 hidden flex items-center mt-1">
+                                    <i data-lucide="x" class="w-3 h-3 mr-1"></i> Odstranit portrét
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 
@@ -294,7 +317,7 @@
         self.addEventListener('install', (e) => { self.skipWaiting(); });
         self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
         self.addEventListener('fetch', (e) => {
-            // Jednoduchý fetch handler, aby PWA prošlo instalací (neprovádí striktní offline caching kvůli povaze single-file)
+            // Jednoduchý fetch handler, aby PWA prošlo instalací
             e.respondWith(fetch(e.request).catch(() => new Response('Offline mód. Aplikace běží, ale vyžaduje prvotní načtení souboru.')));
         });
     `;
@@ -325,6 +348,54 @@
     // Inicializace Lucide ikon
     lucide.createIcons();
 
+    // --- Práce s obrázkem ---
+    function updateImageUI(src) {
+        const preview = document.getElementById('npcImagePreview');
+        const placeholder = document.getElementById('npcImagePlaceholder');
+        const clearBtn = document.getElementById('clearImageBtn');
+        const dataField = document.getElementById('npcImageData');
+        
+        if (src) {
+            preview.src = src;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            clearBtn.classList.remove('hidden');
+            clearBtn.classList.add('flex');
+            dataField.value = src;
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            clearBtn.classList.add('hidden');
+            clearBtn.classList.remove('flex');
+            dataField.value = '';
+        }
+    }
+
+    function setImageFromUrl(url) {
+        updateImageUI(url);
+        document.getElementById('npcImageFile').value = '';
+    }
+
+    function setImageFromFile(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                updateImageUI(e.target.result);
+                document.getElementById('npcImageUrl').value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function clearImage() {
+        updateImageUI('');
+        document.getElementById('npcImageUrl').value = '';
+        document.getElementById('npcImageFile').value = '';
+    }
+
+    // --- Zdatnosti ---
     const skillCategories = {
         "Záchranné hody": [
             "Síla", "Obratnost", "Odolnost", "Inteligence", "Moudrost", "Charisma"
@@ -374,7 +445,6 @@
             catDiv.innerHTML = `<h4 class="font-bold text-gray-700 border-b border-gray-300 mb-3 pb-1">${category}</h4>`;
             
             const gridDiv = document.createElement('div');
-            // Menší kategorie na 3 sloupce, velké kategorie dynamicky na 4 sloupce pro přehlednost
             const gridCols = skills.length > 10 ? "sm:grid-cols-2 md:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3";
             gridDiv.className = `grid grid-cols-1 ${gridCols} gap-2`;
             
@@ -462,14 +532,11 @@
         if (checkedBoxes.length > 5) return; 
         
         const checked = checkedBoxes.map(i => {
-            // Logika pro hudební nástroje a herní sady
             if (i.value === "Hudební nástroj" || i.value === "Herní sada") {
                 const inputId = i.value === "Hudební nástroj" ? "instrumentInput" : "gameInput";
                 const extraVal = document.getElementById(inputId).value.trim();
                 return extraVal ? `${i.value} (${extraVal})` : i.value;
             }
-            
-            // Logika pro záchranné hody
             const isSaveThrow = skillCategories["Záchranné hody"].includes(i.value);
             return isSaveThrow ? `Záchranný hod na ${i.value}` : i.value;
         });
@@ -490,6 +557,7 @@
             passive: document.getElementById('npcPassive').value || '-',
             constType: parseInt(document.getElementById('npcConst').value),
             skills: document.getElementById('npcSkills').value || 'Žádné zdatnosti',
+            image: document.getElementById('npcImageData').value,
             abilities: []
         };
 
@@ -522,7 +590,6 @@
             const thresholdCrit = 10 + (level * 2);
             const thresholdNormalText = `${thresholdIgnore + 1} až ${thresholdCrit - 1}`;
             
-            // Matematika pro nové tagy síly schopností
             const lowPower = 5 + level;
             const midPower = 5 + (level * 2);
             const highPower = 5 + (level * 3);
@@ -536,10 +603,8 @@
                     .replace(/{HALF_LOW}/g, Math.floor(lowPower / 2))
                     .replace(/{HALF_MID}/g, Math.floor(midPower / 2))
                     .replace(/{HALF_HIGH}/g, Math.floor(highPower / 2))
-                    // Zpětná kompatibilita pro staré uložené deníky
                     .replace(/{POWER}/g, midPower)
                     .replace(/{HALF_POWER}/g, Math.floor(midPower / 2))
-                    
                     .replace(/\{-\}/g, '<span class="font-bold inline-block px-1 text-center text-red-600 bg-red-100 rounded border border-red-200 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[-]</span>')
                     .replace(/\{0\}/g, '<span class="font-bold inline-block px-1 text-center text-gray-800 bg-gray-200 rounded border border-gray-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[0]</span>')
                     .replace(/\{\+\}/g, '<span class="font-bold inline-block px-1 text-center text-green-700 bg-green-100 rounded border border-green-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[+]</span>')
@@ -547,16 +612,19 @@
             };
 
             const unlockedAbilities = data.abilities.filter(ab => level >= ab.lvl);
+            const imageHtml = data.image ? `<img src="${data.image}" class="w-14 h-14 sm:w-16 sm:h-16 rounded shadow-sm object-cover border-2 border-red-800 mr-3">` : '';
 
-            // Kompaktní HTML pro tištěnou stránku
             const pageHTML = `
                 <div class="npc-page">
-                    <div class="print-header flex justify-between items-end">
-                        <div>
-                            <h1 class="font-bold text-red-800 dnd-font uppercase tracking-wider">${data.name}</h1>
-                            <p class="text-gray-700 italic">${data.role} | ÚROVEŇ ${level}</p>
+                    <div class="print-header flex justify-between items-end sm:items-center">
+                        <div class="flex items-center">
+                            ${imageHtml}
+                            <div>
+                                <h1 class="font-bold text-red-800 dnd-font uppercase tracking-wider leading-none mb-1">${data.name}</h1>
+                                <p class="text-gray-700 italic">${data.role} | ÚROVEŇ ${level}</p>
+                            </div>
                         </div>
-                        <div class="text-right text-gray-600 text-xs">
+                        <div class="text-right text-gray-600 text-xs self-end sm:self-center">
                             <p><strong>Rasa:</strong> ${data.race} | <strong>Rychlost:</strong> ${data.speed}</p>
                         </div>
                     </div>
@@ -629,7 +697,7 @@
 
     const formFields = [
         'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
-        'npcConst', 'npcSkills',
+        'npcConst', 'npcSkills', 'npcImageData', 'npcImageUrl',
         'ab1Name', 'ab1Uses', 'ab1Desc',
         'ab2Name', 'ab2Uses', 'ab2Desc',
         'ab3Name', 'ab3Uses', 'ab3Desc',
@@ -645,9 +713,7 @@
         
         toast.className = `fixed bottom-5 right-5 z-50 transform transition-all duration-300 px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3 no-print ${type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'} translate-y-20 opacity-0`;
         
-        // Timeout pro zobrazení (nastartování CSS přechodu)
         setTimeout(() => { toast.classList.remove('translate-y-20', 'opacity-0'); }, 10);
-        // Timeout pro skrytí po 3 sekundách
         setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
     }
 
@@ -674,6 +740,7 @@
                 }
             });
             document.getElementById('npcSkills').value = '';
+            clearImage();
             
             btn.innerHTML = "🗑️ Smazat vše";
             btn.classList.replace('bg-red-500', 'bg-gray-200');
@@ -720,6 +787,14 @@
                         document.getElementById(id).value = data[id];
                     }
                 });
+                
+                // Obnovení obrázku, pokud v JSONu byl
+                if (data.npcImageData || data.npcImageUrl) {
+                    updateImageUI(data.npcImageData || data.npcImageUrl);
+                } else {
+                    clearImage();
+                }
+
                 showToast('Deník byl úspěšně načten!', 'success');
             } catch(err) {
                 showToast('Chyba! Soubor není platný export z Kovárny.', 'error');
