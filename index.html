@@ -10,112 +10,950 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
 
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
-        h1, h2, h3, h4, .dnd-font { font-family: 'Crimson Pro', serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        h1, h2, h3, h4, .dnd-font {
+            font-family: 'Crimson Pro', serif;
+        }
 
         @media print {
-            @page { size: A4; margin: 10mm; }
-            body { background-color: white; font-size: 10pt; line-height: 1.2; color: #000; }
+            @page {
+                size: A4;
+                margin: 10mm; /* Maximální využití papíru */
+            }
+            
+            body { 
+                background-color: white; 
+                font-size: 10.5pt; /* Kompaktnější text */
+                line-height: 1.3;
+                color: #000;
+            }
             .no-print { display: none !important; }
             .print-only { display: block !important; }
-            .npc-page { page-break-after: always; box-sizing: border-box; }
-            .print-header { border-bottom: 2px solid #b91c1c; padding-bottom: 6px; margin-bottom: 8px; }
-            .stat-box { border: 1px solid #d1d5db; border-radius: 4px; padding: 4px; text-align: center; }
-            .stat-value { font-size: 1.2rem; font-weight: bold; color: #b91c1c; }
-            .section-title { border-bottom: 1px solid #e5e7eb; color: #7f1d1d; font-family: 'Crimson Pro', serif; font-size: 1.1rem; font-weight: bold; margin: 8px 0 4px 0; }
-            .ability-block { margin-bottom: 6px; }
+            
+            .npc-page {
+                page-break-after: always;
+                box-sizing: border-box;
+            }
+            .npc-page:last-child {
+                page-break-after: auto;
+            }
+
+            .print-header { 
+                border-bottom: 2px solid #b91c1c; 
+                padding-bottom: 6px; 
+                margin-bottom: 12px; 
+                page-break-after: avoid; 
+            }
+            .print-header h1 { font-size: 22pt; margin-bottom: 2px; }
+            .print-header p { font-size: 11pt; margin-top: 0; }
+
+            .stat-box { 
+                border: 1px solid #d1d5db; 
+                border-radius: 6px; 
+                padding: 6px; 
+                text-align: center; 
+            }
+            .stat-value { font-size: 1.3rem; font-weight: bold; color: #b91c1c; font-family: 'Crimson Pro', serif;}
+            
+            .section-title { 
+                border-bottom: 1px solid #e5e7eb; 
+                color: #7f1d1d; 
+                font-family: 'Crimson Pro', serif; 
+                font-size: 1.15rem; 
+                font-weight: bold; 
+                margin-bottom: 8px; 
+                margin-top: 12px; 
+                padding-bottom: 2px;
+                page-break-after: avoid; 
+            }
+            
+            .avoid-break { page-break-inside: avoid; }
+            .ability-block { margin-bottom: 10px; }
+            .ability-title { font-size: 1.05rem; margin-bottom: 2px; }
         }
+
+        @media screen {
+            .print-only { display: none; }
+        }
+
+        /* Modal animace */
+        .modal-bg { transition: opacity 0.3s ease; }
+        .modal-panel { transition: transform 0.3s ease, opacity 0.3s ease; }
     </style>
 </head>
 <body class="text-gray-800">
 
 <div class="container mx-auto p-4 max-w-5xl no-print">
-    <div class="bg-white rounded-xl shadow-xl p-6">
-        <h1 class="text-4xl font-bold text-red-800 mb-6 dnd-font flex items-center"><i data-lucide="anvil" class="w-10 h-10 mr-3"></i>Kovárna</h1>
+    <div class="bg-white rounded-xl shadow-xl p-6 md:p-8">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b-2 border-red-800 pb-2 mb-2 gap-4">
+            <h1 class="text-4xl font-bold text-red-800 flex items-center dnd-font">
+                <i data-lucide="anvil" class="w-10 h-10 mr-3"></i>Kovárna
+            </h1>
+            <button id="installBtn" type="button" class="hidden bg-green-50 hover:bg-green-100 border border-green-300 text-green-800 px-4 py-2 rounded-lg shadow-sm transition text-sm font-bold flex items-center">
+                <i data-lucide="download" class="w-4 h-4 mr-2"></i> Instalovat aplikaci
+            </button>
+        </div>
+        <p class="text-gray-600 mb-6 mt-2">Vyplňte údaje vašeho NPC. Tlačítkem dole vygenerujete deník o 20 úrovních připravený k tisku do PDF.</p>
 
         <form id="npcForm" class="space-y-6">
-            <div class="bg-gray-50 p-5 rounded-lg border border-gray-200">
+            
+            <!-- Základní info -->
+            <div class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm">
                 <h2 class="text-2xl font-bold text-gray-800 mb-4 dnd-font">1. Základní informace</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Jméno NPC</label>
-                        <input type="text" id="npcName" class="w-full p-2 border border-gray-300 rounded" value="Ruby Hammerwhacker">
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Jméno NPC</label>
+                        <input type="text" id="npcName" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. Ruby Hammerwhacker" required value="Ruby Hammerwhacker">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Role / Povolání</label>
-                        <input type="text" id="npcRole" class="w-full p-2 border border-gray-300 rounded" value="Trpasličí Štítonoška">
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Role / Povolání</label>
+                        <input type="text" id="npcRole" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. Trpasličí Štítonoška" required value="Trpasličí Štítonoška">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Rasa</label>
+                        <input type="text" id="npcRace" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. Trpaslík" required value="Trpaslík">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Rychlost pohybu</label>
+                        <input type="text" id="npcSpeed" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. 25 stop" required value="25 stop">
                     </div>
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-medium mb-1">Krátký popis postavy (Zobrazí se v záhlaví)</label>
-                        <textarea id="npcDescription" class="w-full p-2 border border-gray-300 rounded h-16" placeholder="Pár slov o povaze, vzhledu nebo motivaci..."></textarea>
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Pasivní rasové vlastnosti (Volitelné)</label>
+                        <input type="text" id="npcPassive" class="w-full p-2.5 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500" placeholder="např. Vidění ve tmě (60 stop)" value="Vidění ve tmě (60 stop), Trpasličí odolnost proti jedu.">
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Rasa</label>
-                        <input type="text" id="npcRace" class="w-full p-2 border border-gray-300 rounded" value="Trpaslík">
+
+                    <!-- Nahrávání obrázku -->
+                    <div class="md:col-span-2 border-t border-gray-200 pt-4 mt-2">
+                        <label class="block text-sm font-medium mb-1 text-gray-700">Portrét NPC (Volitelné)</label>
+                        <div class="flex flex-col sm:flex-row items-center sm:items-start gap-4">
+                            <div class="w-20 h-20 sm:w-24 sm:h-24 border border-gray-300 rounded overflow-hidden bg-white shadow-inner flex-shrink-0 flex items-center justify-center relative">
+                                <img id="npcImagePreview" src="" class="hidden w-full h-full object-cover absolute inset-0 z-10">
+                                <i data-lucide="image" id="npcImagePlaceholder" class="w-8 h-8 text-gray-300"></i>
+                            </div>
+                            <div class="flex-1 w-full space-y-2">
+                                <input type="url" id="npcImageUrl" placeholder="Vložte URL obrázku (http://...)" class="w-full p-2 border border-gray-300 rounded focus:ring-red-500 focus:border-red-500 text-sm" oninput="setImageFromUrl(this.value)">
+                                <div class="flex items-center space-x-2 bg-white p-1 rounded border border-gray-200">
+                                    <span class="text-sm text-gray-500 px-2 font-medium">Nebo soubor:</span>
+                                    <input type="file" id="npcImageFile" accept="image/*" class="w-full text-sm text-gray-600 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 transition cursor-pointer" onchange="setImageFromFile(event)">
+                                </div>
+                                <input type="hidden" id="npcImageData" value="">
+                                <button type="button" id="clearImageBtn" onclick="clearImage()" class="text-xs font-bold text-red-600 hover:text-red-800 hidden flex items-center mt-1">
+                                    <i data-lucide="x" class="w-3 h-3 mr-1"></i> Odstranit portrét
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-medium mb-1">Rychlost pohybu</label>
-                        <input type="text" id="npcSpeed" class="w-full p-2 border border-gray-300 rounded" value="25 stop">
+
+                </div>
+            </div>
+
+            <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 shadow-sm">
+                <h2 class="text-2xl font-bold text-blue-900 mb-4 dnd-font">2. Obrana a Výdrž</h2>
+                <div>
+                    <label class="block text-sm font-medium mb-1 text-blue-800">Konstituce (Třída zbroje a Kapacita Zdraví)</label>
+                    <select id="npcConst" class="w-full p-2.5 border border-blue-300 rounded bg-white focus:ring-blue-500 focus:border-blue-500">
+                        <option value="2">Křehká (AC 13, Základ Zdraví 2)</option>
+                        <option value="3">Střední (AC 15, Základ Zdraví 3)</option>
+                        <option value="4" selected>Odolná (AC 18, Základ Zdraví 4)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="bg-green-50 p-5 rounded-lg border border-green-200 shadow-sm">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-green-900 dnd-font">3. Zdatnosti (5 max)</h2>
+                    <button type="button" onclick="openSkillModal()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow transition text-sm font-medium">Vybrat ze seznamu</button>
+                </div>
+                <input type="text" id="npcSkills" class="w-full p-2.5 border border-green-300 rounded bg-gray-50 text-gray-600 cursor-not-allowed" placeholder="Klikněte na tlačítko pro výběr zdatností..." readonly value="Záchranný hod na Sílu, Záchranný hod na Odolnost, Atletika, Přežití, Kovářské nástroje">
+            </div>
+
+            <div class="bg-yellow-50 p-5 rounded-lg border border-yellow-200 shadow-sm">
+                <h2 class="text-2xl font-bold text-yellow-800 mb-2 dnd-font">4. Schopnosti a Akce</h2>
+                <p class="text-sm text-yellow-700 mb-4 bg-yellow-100 p-3 rounded border border-yellow-300">
+                    Seskupeno do 6 schopností. Používejte značky pro formátování v PDF:<br>
+                    Ikony: <code class="font-bold bg-white px-1 rounded border border-gray-300">{-}</code>, <code class="font-bold bg-white px-1 rounded border border-gray-300">{0}</code>, <code class="font-bold bg-white px-1 rounded border border-gray-300">{+}</code><br>
+                    Síla: <code class="font-bold bg-white px-1 rounded border border-gray-300">{LOW}</code> (Nízká), <code class="font-bold bg-white px-1 rounded border border-gray-300">{MID}</code> (Střední), <code class="font-bold bg-white px-1 rounded border border-gray-300">{HIGH}</code> (Vysoká). Pro poloviční hodnoty přidejte HALF_ (např. <code class="font-bold bg-white px-1 rounded border border-gray-300">{HALF_LOW}</code>).
+                </p>
+                
+                <div class="space-y-4">
+                    <!-- Úroveň 1 (Schopnost 1) -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">1. Schopnost / Útok (Úroveň 1)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab1Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce" selected>Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní">Pasivní</option>
+                            </select>
+                            <input type="text" id="ab1Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Drcení válečným kladivem" required placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab1TrackType" onchange="toggleTrack(1)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab1TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Počet použití do odpočinku">
+                                <input type="number" id="ab1TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab1Desc" class="w-full p-2 border border-gray-300 rounded h-20 text-sm focus:ring-yellow-500 focus:border-yellow-500" required>{-} Kladivo s duněním mine cíl.
+{0} Základní úspěch. Udělí {LOW} drtivého poškození.
+{+} Úspěch s efektem (Zemětřesení). Udělí {LOW} poškození a srazí cíl k zemi (Prone), čímž získá útoky nablízko vůči němu Výhodu.</textarea>
+                    </div>
+                    
+                    <!-- Úroveň 1 (Schopnost 2) -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">2. Schopnost (Úroveň 1)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab2Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab2Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Dědictví kamene" placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab2TrackType" onchange="toggleTrack(2)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab2TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Počet použití do odpočinku">
+                                <input type="number" id="ab2TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab2Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby se automaticky vyzná v podzemí a kovech. Nikdy se neztratí v jeskyních a rozezná hodnotu nerostů.</textarea>
+                    </div>
+
+                    <!-- Úroveň 5 -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">3. Schopnost (Úroveň 5)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab3Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce" selected>Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní">Pasivní</option>
+                            </select>
+                            <input type="text" id="ab3Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Kamenný štít" placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab3TrackType" onchange="toggleTrack(3)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none">Bez omezení</option>
+                                    <option value="uses" selected>Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab3TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" value="1" title="Počet použití do odpočinku">
+                                <input type="number" id="ab3TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab3Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Jednou za kolo, když je spojenec do 5 stop zasažen, přesměruje zásah na sebe (srovná se s jejími Prahy zranění).</textarea>
+                    </div>
+
+                    <!-- Úroveň 9 -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">4. Schopnost (Úroveň 9)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab4Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab4Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Nezastavitelný postup" placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab4TrackType" onchange="toggleTrack(4)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab4TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Počet použití do odpočinku">
+                                <input type="number" id="ab4TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab4Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby ignoruje postihy za těžký terén a žádný nepřítel ji nemůže silou odtlačit ani pohnout z místa.</textarea>
+                    </div>
+
+                    <!-- Úroveň 13 -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">5. Schopnost (Úroveň 13)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab5Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab5Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Lavina úderů" placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab5TrackType" onchange="toggleTrack(5)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none" selected>Bez omezení</option>
+                                    <option value="uses">Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab5TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Počet použití do odpočinku">
+                                <input type="number" id="ab5TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab5Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Kdykoliv Ruby při útoku hodí {0} nebo {+}, tlaková vlna udělí {HALF_LOW} poškození i dalšímu nepříteli v dosahu.</textarea>
+                    </div>
+
+                    <!-- Úroveň 17 -->
+                    <div class="bg-white p-3 rounded border border-yellow-300">
+                        <label class="block text-sm font-bold text-yellow-900 mb-1 border-b pb-1">6. Schopnost (Úroveň 17)</label>
+                        <div class="flex flex-col sm:flex-row gap-2 mb-2">
+                            <select id="ab6Type" class="p-2 border border-gray-300 rounded font-medium text-sm bg-gray-50 sm:w-36 shrink-0 focus:ring-yellow-500 focus:border-yellow-500">
+                                <option value="Akce">Akce</option>
+                                <option value="Reakce">Reakce</option>
+                                <option value="Akce/Reakce">Akce/Reakce</option>
+                                <option value="Pasivní" selected>Pasivní</option>
+                            </select>
+                            <input type="text" id="ab6Name" class="w-full p-2 border border-gray-300 rounded font-medium focus:ring-yellow-500 focus:border-yellow-500" value="◆ Žulové srdce" placeholder="Název schopnosti">
+                            <div class="flex items-center gap-1 sm:w-auto shrink-0 bg-gray-50 border border-gray-300 rounded p-1">
+                                <select id="ab6TrackType" onchange="toggleTrack(6)" class="bg-transparent text-sm font-medium focus:outline-none cursor-pointer">
+                                    <option value="none">Bez omezení</option>
+                                    <option value="uses" selected>Použití</option>
+                                    <option value="recharge">Nabití</option>
+                                </select>
+                                <input type="number" id="ab6TrackUses" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" value="1" title="Počet použití do odpočinku">
+                                <input type="number" id="ab6TrackRecharge" class="hidden w-16 px-2 py-1 border border-gray-300 rounded text-sm bg-white focus:ring-yellow-500" min="1" max="10" placeholder="Max" title="Kapacita nabití do zásoby">
+                            </div>
+                        </div>
+                        <textarea id="ab6Desc" class="w-full p-2 border border-gray-300 rounded h-16 text-sm focus:ring-yellow-500 focus:border-yellow-500">Ruby je nezničitelná. V každém boji automaticky ignoruje úplně první ztrátu bodů Zdraví, ať je rána jakkoliv velká.</textarea>
                     </div>
                 </div>
             </div>
 
-            <!-- Zbytek formuláře zůstává shodný, přidány pouze nutné ID pro popis -->
-            <div class="bg-blue-50 p-5 rounded-lg border border-blue-200">
-                <h2 class="text-2xl font-bold text-blue-900 mb-4 dnd-font">2. Obrana a Výdrž</h2>
-                <select id="npcConst" class="w-full p-2 border border-blue-300 rounded">
-                    <option value="2">Křehká</option>
-                    <option value="3">Střední</option>
-                    <option value="4" selected>Odolná</option>
-                </select>
+            <div class="flex flex-wrap justify-center gap-3 pt-6 mb-2 border-t border-gray-200">
+                <button type="button" onclick="clearForm(this)" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">🗑️ Smazat vše</button>
+                <button type="button" onclick="exportJSON()" class="bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">💾 Uložit do JSON</button>
+                <button type="button" onclick="triggerImport()" class="bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-2 rounded shadow transition text-sm font-medium w-full sm:w-auto">📂 Načíst z JSON</button>
+                <input type="file" id="importFile" accept=".json" class="hidden" onchange="importJSON(event)">
             </div>
 
-            <div class="bg-green-50 p-5 rounded-lg border border-green-200">
-                <h2 class="text-2xl font-bold text-green-900 mb-4 dnd-font">3. Zdatnosti</h2>
-                <input type="text" id="npcSkills" class="w-full p-2 border border-green-300 rounded" value="Atletika, Kovářské nástroje">
-            </div>
-
-            <!-- (Zkráceno pro přehlednost kódu, funkčnost zůstává) -->
-            <div class="text-center pt-6">
-                <button type="button" onclick="generateAndPrint()" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-8 rounded-xl text-xl w-full">Vygenerovat deník</button>
+            <!-- Tlačítko Generovat -->
+            <div class="text-center pt-2 pb-10">
+                <button type="button" onclick="generateAndPrint()" class="bg-red-700 hover:bg-red-800 text-white font-bold py-4 px-8 rounded-xl shadow-lg transition-transform transform hover:scale-105 text-xl w-full md:w-auto">
+                    <span class="block">Vygenerovat deník (1. - 20. úroveň)</span>
+                    <span class="block text-sm font-normal opacity-90">a otevřít dialog pro tisk do PDF</span>
+                </button>
             </div>
         </form>
     </div>
 </div>
 
+<div id="skillModal" class="fixed inset-0 z-50 hidden no-print">
+    <div class="modal-bg absolute inset-0 bg-gray-900 opacity-50" onclick="closeSkillModal()"></div>
+    <div class="modal-panel absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl w-11/12 max-w-5xl max-h-[90vh] flex flex-col">
+        
+        <div class="flex justify-between items-center p-5 border-b border-gray-200">
+            <h3 class="text-xl font-bold text-gray-800 dnd-font">Zdatnosti</h3>
+            <div class="flex items-center space-x-4">
+                <span id="skillCounter" class="bg-gray-100 px-3 py-1 rounded text-sm font-bold text-gray-600">Vybráno: 0 / 5</span>
+                <button onclick="closeSkillModal()" class="text-gray-400 hover:text-gray-700">&times; Zavřít</button>
+            </div>
+        </div>
+        
+        <div id="skillWarning" class="hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-3 text-sm font-medium">
+            Můžete vybrat maximálně 5 zdatností. Odškrtněte předchozí.
+        </div>
+
+        <div class="p-5 overflow-y-auto" id="skillCategoriesContainer">
+            <!-- JavaScript vkládá mřížku -->
+        </div>
+
+        <div class="p-5 border-t border-gray-200 text-right bg-gray-50 rounded-b-xl">
+            <button onclick="saveSkills()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow">Potvrdit výběr</button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="fixed bottom-5 right-5 z-50 transform transition-all duration-300 translate-y-20 opacity-0 px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3 no-print">
+    <span id="toastIcon">ℹ️</span>
+    <span id="toastMsg" class="font-medium">Zpráva</span>
+</div>
+
 <div id="printContainer" class="print-only"></div>
 
 <script>
+    // --- PWA Dynamický Manifest a Service Worker ---
+    const manifestData = {
+        "name": "Kovárna - NPC Generátor",
+        "short_name": "Kovárna",
+        "start_url": window.location.href,
+        "display": "standalone",
+        "background_color": "#f3f4f6",
+        "theme_color": "#991b1b",
+        "icons": [{
+            "src": "data:image/svg+xml;charset=utf-8," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="192" height="192" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-anvil"><path d="M7 10H6a4 4 0 0 1-4-4 1 1 0 0 1 1-1h4"/><path d="M7 5a1 1 0 0 1 1-1h13a1 1 0 0 1 1 1 7 7 0 0 1-7 7H8a1 1 0 0 1-1-1z"/><path d="M9 12v5"/><path d="M15 12v5"/><path d="M5 20a3 3 0 0 1 3-3h8a3 3 0 0 1 3 3 1 1 0 0 1-1 1H6a1 1 0 0 1-1-1z"/></svg>'),
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any maskable"
+        }]
+    };
+    document.getElementById('manifest-link').setAttribute('href', 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(manifestData)));
+
+    const swCode = `
+        self.addEventListener('install', (e) => { self.skipWaiting(); });
+        self.addEventListener('activate', (e) => { e.waitUntil(clients.claim()); });
+        self.addEventListener('fetch', (e) => {
+            e.respondWith(fetch(e.request).catch(() => new Response('Offline mód. Aplikace běží, ale vyžaduje prvotní načtení souboru.')));
+        });
+    `;
+    const swBlob = new Blob([swCode], { type: 'application/javascript' });
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register(URL.createObjectURL(swBlob)).catch(console.error);
+    }
+
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        const installBtn = document.getElementById('installBtn');
+        if(installBtn) installBtn.classList.remove('hidden');
+    });
+
+    document.getElementById('installBtn')?.addEventListener('click', async () => {
+        if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                document.getElementById('installBtn').classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+    });
+
+    // Inicializace Lucide ikon
     lucide.createIcons();
+
+    // --- Přepínání typů sledování pro Schopnosti ---
+    function toggleTrack(num) {
+        const type = document.getElementById(`ab${num}TrackType`).value;
+        const usesInput = document.getElementById(`ab${num}TrackUses`);
+        const rechargeInput = document.getElementById(`ab${num}TrackRecharge`);
+        
+        if (type === 'uses') {
+            usesInput.classList.remove('hidden');
+            rechargeInput.classList.add('hidden');
+        } else if (type === 'recharge') {
+            usesInput.classList.add('hidden');
+            rechargeInput.classList.remove('hidden');
+        } else {
+            usesInput.classList.add('hidden');
+            rechargeInput.classList.add('hidden');
+        }
+    }
+
+    // --- Práce s obrázkem ---
+    function updateImageUI(src) {
+        const preview = document.getElementById('npcImagePreview');
+        const placeholder = document.getElementById('npcImagePlaceholder');
+        const clearBtn = document.getElementById('clearImageBtn');
+        const dataField = document.getElementById('npcImageData');
+        
+        if (src) {
+            preview.src = src;
+            preview.classList.remove('hidden');
+            placeholder.classList.add('hidden');
+            clearBtn.classList.remove('hidden');
+            clearBtn.classList.add('flex');
+            dataField.value = src;
+        } else {
+            preview.src = '';
+            preview.classList.add('hidden');
+            placeholder.classList.remove('hidden');
+            clearBtn.classList.add('hidden');
+            clearBtn.classList.remove('flex');
+            dataField.value = '';
+        }
+    }
+
+    function setImageFromUrl(url) {
+        updateImageUI(url);
+        document.getElementById('npcImageFile').value = '';
+    }
+
+    function setImageFromFile(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                updateImageUI(e.target.result);
+                document.getElementById('npcImageUrl').value = '';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function clearImage() {
+        updateImageUI('');
+        document.getElementById('npcImageUrl').value = '';
+        document.getElementById('npcImageFile').value = '';
+    }
+
+    // --- Zdatnosti ---
+    const skillCategories = {
+        "Záchranné hody": [
+            "Síla", "Obratnost", "Odolnost", "Inteligence", "Moudrost", "Charisma"
+        ],
+        "Dovednosti": [
+            "Akrobacie", "Atletika", "Čachry", "Historie", "Klamání", "Lékařství", 
+            "Mystika", "Náboženství", "Pátrání", "Plížení", "Přesvědčování", "Příroda", 
+            "Přežití", "Vhled", "Vnímání", "Vystupování/Umění", "Zacházení se zvířaty", "Zastrašování"
+        ],
+        "Pomůcky": [
+            "Bylinkářská souprava", "Navigační pomůcky", "Padělatelská souprava", 
+            "Souprava pro přestrojování", "Travičská souprava", "Zlodějské náčiní"
+        ],
+        "Řemeslnické nářadí": [
+            "Alchymistické suroviny", "Hrnčířské nástroje", "Kaligrafické potřeby", 
+            "Kartografické pomůcky", "Klenotnické nářadí", "Kovářské nástroje", 
+            "Koželužnické pomůcky", "Kuchařské nástroje", "Kutilské nářadí", 
+            "Malířské potřeby", "Pivovarnické suroviny", "Řezbářské nástroje", 
+            "Sklenářské nástroje", "Ševcovské nářadí", "Tesařské nástroje", 
+            "Tkalcovské potřeby", "Zednické nářadí"
+        ],
+        "Dopravní prostředky": [
+            "Lodě", "Vozidla"
+        ],
+        "Zábava a Hry": [
+            "Hudební nástroj", "Herní sada"
+        ]
+    };
+
+    function toggleExtraInput(cb, inputId) {
+        const input = document.getElementById(inputId);
+        if (cb.checked) {
+            input.classList.remove('hidden');
+            input.focus();
+        } else {
+            input.classList.add('hidden');
+        }
+    }
+
+    function initSkillModal() {
+        const container = document.getElementById('skillCategoriesContainer');
+        container.innerHTML = '';
+        
+        for (const [category, skills] of Object.entries(skillCategories)) {
+            const catDiv = document.createElement('div');
+            catDiv.className = 'mb-6';
+            catDiv.innerHTML = `<h4 class="font-bold text-gray-700 border-b border-gray-300 mb-3 pb-1">${category}</h4>`;
+            
+            const gridDiv = document.createElement('div');
+            const gridCols = skills.length > 10 ? "sm:grid-cols-2 md:grid-cols-4" : "sm:grid-cols-2 md:grid-cols-3";
+            gridDiv.className = `grid grid-cols-1 ${gridCols} gap-2`;
+            
+            skills.forEach(skill => {
+                if (skill === "Hudební nástroj" || skill === "Herní sada") {
+                    const inputId = skill === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                    const placeholder = skill === "Hudební nástroj" ? "(jaký?)" : "(jaká?)";
+                    gridDiv.innerHTML += `
+                        <div class="flex items-center space-x-1 text-sm hover:bg-gray-100 p-1 rounded transition">
+                            <label class="flex items-center space-x-2 cursor-pointer">
+                                <input type="checkbox" value="${skill}" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount(); toggleExtraInput(this, '${inputId}')">
+                                <span>${skill}</span>
+                            </label>
+                            <input type="text" id="${inputId}" class="border-b border-gray-400 bg-transparent text-xs w-20 focus:outline-none focus:border-green-600 hidden" placeholder="${placeholder}">
+                        </div>
+                    `;
+                } else {
+                    gridDiv.innerHTML += `
+                        <label class="flex items-center space-x-2 text-sm cursor-pointer hover:bg-gray-100 p-1 rounded transition">
+                            <input type="checkbox" value="${skill}" class="skill-checkbox form-checkbox h-4 w-4 text-green-600 rounded" onchange="updateSkillCount()">
+                            <span>${skill}</span>
+                        </label>
+                    `;
+                }
+            });
+            
+            catDiv.appendChild(gridDiv);
+            container.appendChild(catDiv);
+        }
+    }
+
+    function openSkillModal() {
+        const currentSkills = document.getElementById('npcSkills').value.split(',').map(s => s.trim());
+        document.querySelectorAll('.skill-checkbox').forEach(cb => {
+            if (cb.value === "Hudební nástroj" || cb.value === "Herní sada") {
+                const matchPrefix = cb.value;
+                const inputId = cb.value === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                const instMatch = currentSkills.find(s => s.startsWith(matchPrefix));
+                cb.checked = !!instMatch;
+                const input = document.getElementById(inputId);
+                if (input) {
+                    if (cb.checked) {
+                        input.classList.remove('hidden');
+                        const match = instMatch.match(/\((.*?)\)/);
+                        input.value = match ? match[1] : '';
+                    } else {
+                        input.classList.add('hidden');
+                    }
+                }
+            } else {
+                cb.checked = currentSkills.includes(cb.value) || currentSkills.includes(`Záchranný hod na ${cb.value}`);
+            }
+        });
+        updateSkillCount();
+        document.getElementById('skillWarning').classList.add('hidden');
+        document.getElementById('skillModal').classList.remove('hidden');
+    }
+
+    function closeSkillModal() {
+        document.getElementById('skillModal').classList.add('hidden');
+    }
+
+    function updateSkillCount() {
+        const checkedBoxes = document.querySelectorAll('.skill-checkbox:checked');
+        const count = checkedBoxes.length;
+        const counterSpan = document.getElementById('skillCounter');
+        
+        counterSpan.innerText = `Vybráno: ${count} / 5`;
+        
+        if (count > 5) {
+            counterSpan.classList.replace('bg-gray-100', 'bg-red-100');
+            counterSpan.classList.replace('text-gray-600', 'text-red-700');
+            document.getElementById('skillWarning').classList.remove('hidden');
+            document.querySelectorAll('.skill-checkbox:not(:checked)').forEach(cb => cb.disabled = true);
+        } else {
+            counterSpan.classList.replace('bg-red-100', 'bg-gray-100');
+            counterSpan.classList.replace('text-red-700', 'text-gray-600');
+            document.getElementById('skillWarning').classList.add('hidden');
+            document.querySelectorAll('.skill-checkbox').forEach(cb => cb.disabled = false);
+        }
+    }
+
+    function saveSkills() {
+        const checkedBoxes = Array.from(document.querySelectorAll('.skill-checkbox:checked'));
+        if (checkedBoxes.length > 5) return; 
+        
+        const checked = checkedBoxes.map(i => {
+            if (i.value === "Hudební nástroj" || i.value === "Herní sada") {
+                const inputId = i.value === "Hudební nástroj" ? "instrumentInput" : "gameInput";
+                const extraVal = document.getElementById(inputId).value.trim();
+                return extraVal ? `${i.value} (${extraVal})` : i.value;
+            }
+            const isSaveThrow = skillCategories["Záchranné hody"].includes(i.value);
+            return isSaveThrow ? `Záchranný hod na ${i.value}` : i.value;
+        });
+        document.getElementById('npcSkills').value = checked.join(', ');
+        closeSkillModal();
+    }
+
+    window.onload = function() {
+        initSkillModal();
+        for(let i=1; i<=6; i++) {
+            toggleTrack(i);
+        }
+    };
 
     function generateAndPrint() {
         const data = {
-            name: document.getElementById('npcName').value,
-            role: document.getElementById('npcRole').value,
-            desc: document.getElementById('npcDescription').value,
-            race: document.getElementById('npcRace').value,
-            speed: document.getElementById('npcSpeed').value,
+            name: document.getElementById('npcName').value || 'Neznámé NPC',
+            role: document.getElementById('npcRole').value || 'Role neuvedena',
+            race: document.getElementById('npcRace').value || 'Neznámá rasa',
+            speed: document.getElementById('npcSpeed').value || '30 stop',
+            passive: document.getElementById('npcPassive').value || '-',
             constType: parseInt(document.getElementById('npcConst').value),
-            skills: document.getElementById('npcSkills').value
+            skills: document.getElementById('npcSkills').value || 'Žádné zdatnosti',
+            image: document.getElementById('npcImageData').value,
+            abilities: []
         };
+
+        const abilityLevels = [1, 1, 5, 9, 13, 17];
+        for(let i=1; i<=6; i++) {
+            const nameEl = document.getElementById(`ab${i}Name`);
+            const typeEl = document.getElementById(`ab${i}Type`);
+            const descEl = document.getElementById(`ab${i}Desc`);
+            const trackTypeEl = document.getElementById(`ab${i}TrackType`);
+            const trackUsesEl = document.getElementById(`ab${i}TrackUses`);
+            const trackRechEl = document.getElementById(`ab${i}TrackRecharge`);
+            
+            if (nameEl && descEl && nameEl.value.trim() !== '') {
+                const trackType = trackTypeEl ? trackTypeEl.value : 'none';
+                const trackUses = trackUsesEl && trackUsesEl.value ? parseInt(trackUsesEl.value) : 0;
+                const trackRecharge = trackRechEl && trackRechEl.value ? parseInt(trackRechEl.value) : 0;
+                
+                data.abilities.push({ 
+                    lvl: abilityLevels[i-1], 
+                    name: nameEl.value.trim(), 
+                    type: typeEl ? typeEl.value : 'Pasivní',
+                    desc: descEl.value.trim(),
+                    trackType: trackType,
+                    trackUses: trackUses,
+                    trackRecharge: trackRecharge
+                });
+            }
+        }
+        data.abilities.sort((a, b) => a.lvl - b.lvl);
 
         const container = document.getElementById('printContainer');
         container.innerHTML = '';
 
+        const AC = data.constType === 2 ? 13 : (data.constType === 3 ? 15 : 18);
+        const baseHealth = data.constType;
+
         for (let level = 1; level <= 20; level++) {
-            container.innerHTML += `
+            const health = baseHealth + Math.floor(level / 2);
+            const thresholdIgnore = 5 + Math.floor(level / 2);
+            const thresholdCrit = 10 + (level * 2);
+            const thresholdNormalText = `${thresholdIgnore + 1} až ${thresholdCrit - 1}`;
+            
+            const lowPower = 5 + level;
+            const midPower = 5 + (level * 2);
+            const highPower = 5 + (level * 3);
+
+            const parseTags = (text) => {
+                if(!text) return '';
+                return text
+                    .replace(/{LOW}/g, lowPower)
+                    .replace(/{MID}/g, midPower)
+                    .replace(/{HIGH}/g, highPower)
+                    .replace(/{HALF_LOW}/g, Math.floor(lowPower / 2))
+                    .replace(/{HALF_MID}/g, Math.floor(midPower / 2))
+                    .replace(/{HALF_HIGH}/g, Math.floor(highPower / 2))
+                    .replace(/{POWER}/g, midPower)
+                    .replace(/{HALF_POWER}/g, Math.floor(midPower / 2))
+                    .replace(/\{-\}/g, '<span class="font-bold inline-block px-1 text-center text-red-600 bg-red-100 rounded border border-red-200 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[-]</span>')
+                    .replace(/\{0\}/g, '<span class="font-bold inline-block px-1 text-center text-gray-800 bg-gray-200 rounded border border-gray-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[0]</span>')
+                    .replace(/\{\+\}/g, '<span class="font-bold inline-block px-1 text-center text-green-700 bg-green-100 rounded border border-green-300 shadow-sm leading-tight tracking-wider" style="min-width:1.5rem">[+]</span>')
+                    .replace(/\n/g, '<br>');
+            };
+
+            const unlockedAbilities = data.abilities.filter(ab => level >= ab.lvl);
+            const imageHtml = data.image ? `<img src="${data.image}" class="w-14 h-14 sm:w-16 sm:h-16 rounded shadow-sm object-cover border-2 border-red-800 mr-3">` : '';
+
+            const pageHTML = `
                 <div class="npc-page">
-                    <div class="print-header">
-                        <h1 class="font-bold text-2xl text-red-800">${data.name}</h1>
-                        <p class="text-gray-700 italic">${data.role} | Úroveň ${level}</p>
-                        <p class="text-sm text-gray-600 mt-1">${data.desc}</p>
+                    <div class="print-header flex justify-between items-end sm:items-center">
+                        <div class="flex items-center">
+                            ${imageHtml}
+                            <div>
+                                <h1 class="font-bold text-red-800 dnd-font uppercase tracking-wider leading-none mb-1">${data.name}</h1>
+                                <p class="text-gray-700 italic">${data.role} | ÚROVEŇ ${level}</p>
+                            </div>
+                        </div>
+                        <div class="text-right text-gray-600 text-xs self-end sm:self-center">
+                            <p><strong>Rasa:</strong> ${data.race} | <strong>Rychlost:</strong> ${data.speed}</p>
+                        </div>
                     </div>
-                    <!-- Zde by pokračovalo vykreslení statistik a schopností -->
+
+                    <div class="mb-3 grid grid-cols-2 gap-2 text-xs">
+                        <div><p><strong>Pasivní znaky:</strong> ${data.passive}</p></div>
+                        <div class="text-right"><p><strong>Zdatnosti:</strong> ${data.skills}</p></div>
+                    </div>
+
+                    <h2 class="section-title">Obrana a Zdraví</h2>
+                    <div class="grid grid-cols-6 gap-2 mb-3">
+                        <div class="stat-box bg-gray-50">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Třída zbroje</div>
+                            <div class="stat-value">${AC}</div>
+                        </div>
+                        <div class="stat-box bg-gray-50">
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Max Zdraví</div>
+                            <div class="stat-value text-red-600">${health}</div>
+                        </div>
+                        <div class="stat-box bg-white border border-gray-400">
+                            <div class="text-[10px] text-gray-400 uppercase font-bold">Aktuální</div>
+                            <div class="stat-value text-transparent">X</div>
+                        </div>
+                        <div class="stat-box bg-green-50 col-span-3 flex items-center justify-center">
+                            <p class="text-[10px] text-green-800 leading-tight">
+                                Zhojení 1 až <b>${thresholdCrit - 1} HP</b> = <b>+1 Zdraví</b><br>
+                                Zhojení <b>${thresholdCrit} HP</b> a více = <b>+2 Zdraví</b>
+                            </p>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title avoid-break">Prahy zranění (Srovnání s poškozením od nepřítele)</h2>
+                    <div class="grid grid-cols-3 gap-2 mb-4 avoid-break text-xs">
+                        <div class="p-2 border rounded border-gray-300 bg-white shadow-sm text-center">
+                            <p class="font-bold text-gray-700 mb-0.5">0 Ztráta (Odraženo)</p>
+                            <p>Zásah za <span class="text-sm font-bold">${thresholdIgnore} a méně</span></p>
+                        </div>
+                        <div class="p-2 border rounded border-yellow-400 bg-yellow-50 shadow-sm text-center">
+                            <p class="font-bold text-yellow-800 mb-0.5">-1 Zdraví (Běžný)</p>
+                            <p>Zásah za <span class="text-sm font-bold">${thresholdNormalText}</span></p>
+                        </div>
+                        <div class="p-2 border rounded border-red-500 bg-red-50 shadow-sm text-center">
+                            <p class="font-bold text-red-800 mb-0.5">-2 Zdraví (Kritický)</p>
+                            <p>Zásah za <span class="text-sm font-bold">${thresholdCrit} a více</span></p>
+                        </div>
+                    </div>
+
+                    <h2 class="section-title avoid-break">Schopnosti a Akce</h2>
+                    <div class="space-y-2">
+                        ${unlockedAbilities.map(ab => {
+                            let usesHtml = '';
+                            if (ab.trackType === 'uses' && ab.trackUses > 0) {
+                                let boxes = '';
+                                for(let k=0; k<ab.trackUses; k++) {
+                                    boxes += '<span class="inline-block w-2.5 h-2.5 border border-gray-500 rounded-sm ml-1 bg-white shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></span>';
+                                }
+                                usesHtml = `<span class="float-right flex items-center text-[10px] text-gray-500 font-sans font-normal mt-0.5 tracking-wide">Použití: ${boxes}</span>`;
+                            } else if (ab.trackType === 'recharge' && ab.trackRecharge > 0) {
+                                let boxes = '';
+                                for(let k=0; k<ab.trackRecharge; k++) {
+                                    boxes += '<span class="inline-block w-2.5 h-2.5 border border-gray-500 rounded-sm ml-1 bg-white shadow-sm" style="-webkit-print-color-adjust: exact; print-color-adjust: exact;"></span>';
+                                }
+                                usesHtml = `<span class="float-right flex items-center text-[10px] text-gray-500 font-sans font-normal mt-0.5 tracking-wide">Nabití: ${boxes}</span>`;
+                            }
+                            
+                            return `
+                                <div class="ability-block avoid-break">
+                                    <h4 class="ability-title font-bold dnd-font text-gray-800 border-b border-gray-100 pb-0.5 mb-1">
+                                        ${ab.name} 
+                                        <span class="text-xs font-normal text-gray-500 font-sans italic ml-1">(${ab.type})</span>
+                                        ${usesHtml}
+                                    </h4>
+                                    <p class="text-gray-800 text-xs leading-relaxed">${parseTags(ab.desc)}</p>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
                 </div>
             `;
+            container.innerHTML += pageHTML;
         }
-        window.print();
+
+        setTimeout(() => { window.print(); }, 500);
+    }
+
+    const formFields = [
+        'npcName', 'npcRole', 'npcRace', 'npcSpeed', 'npcPassive',
+        'npcConst', 'npcSkills', 'npcImageData', 'npcImageUrl',
+        'ab1Type', 'ab1Name', 'ab1TrackType', 'ab1TrackUses', 'ab1TrackRecharge', 'ab1Desc',
+        'ab2Type', 'ab2Name', 'ab2TrackType', 'ab2TrackUses', 'ab2TrackRecharge', 'ab2Desc',
+        'ab3Type', 'ab3Name', 'ab3TrackType', 'ab3TrackUses', 'ab3TrackRecharge', 'ab3Desc',
+        'ab4Type', 'ab4Name', 'ab4TrackType', 'ab4TrackUses', 'ab4TrackRecharge', 'ab4Desc',
+        'ab5Type', 'ab5Name', 'ab5TrackType', 'ab5TrackUses', 'ab5TrackRecharge', 'ab5Desc',
+        'ab6Type', 'ab6Name', 'ab6TrackType', 'ab6TrackUses', 'ab6TrackRecharge', 'ab6Desc'
+    ];
+
+    function showToast(msg, type = 'success') {
+        const toast = document.getElementById('toast');
+        document.getElementById('toastMsg').innerText = msg;
+        document.getElementById('toastIcon').innerText = type === 'error' ? '❌' : '✅';
+        
+        toast.className = `fixed bottom-5 right-5 z-50 transform transition-all duration-300 px-6 py-3 rounded-xl shadow-2xl flex items-center space-x-3 no-print ${type === 'error' ? 'bg-red-600 text-white' : 'bg-gray-800 text-white'} translate-y-20 opacity-0`;
+        
+        setTimeout(() => { toast.classList.remove('translate-y-20', 'opacity-0'); }, 10);
+        setTimeout(() => { toast.classList.add('translate-y-20', 'opacity-0'); }, 3000);
+    }
+
+    let clearBtnTimeout;
+    function clearForm(btn) {
+        if (btn.innerText !== "⚠️ Potvrdit smazání") {
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = "⚠️ Potvrdit smazání";
+            btn.classList.replace('bg-gray-200', 'bg-red-500');
+            btn.classList.replace('text-gray-700', 'text-white');
+            
+            clearBtnTimeout = setTimeout(() => {
+                btn.innerHTML = originalHTML;
+                btn.classList.replace('bg-red-500', 'bg-gray-200');
+                btn.classList.replace('text-white', 'text-gray-700');
+            }, 3000);
+        } else {
+            clearTimeout(clearBtnTimeout);
+            formFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    if (el.tagName === 'SELECT') {
+                        el.selectedIndex = 0;
+                        if(id.includes('TrackType')) toggleTrack(id.replace(/[^\d]/g, ''));
+                    }
+                    else el.value = '';
+                }
+            });
+            document.getElementById('npcSkills').value = '';
+            clearImage();
+            
+            btn.innerHTML = "🗑️ Smazat vše";
+            btn.classList.replace('bg-red-500', 'bg-gray-200');
+            btn.classList.replace('text-white', 'text-gray-700');
+            showToast('Formulář byl úspěšně vymazán.', 'success');
+        }
+    }
+
+    function exportJSON() {
+        let data = {};
+        formFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) data[id] = el.value;
+        });
+        
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        const anchor = document.createElement('a');
+        anchor.setAttribute("href", dataStr);
+        
+        let fileName = (document.getElementById('npcName').value || "nove_npc").replace(/[\s\W-]+/g, '_').toLowerCase() + ".json";
+        anchor.setAttribute("download", fileName);
+        
+        document.body.appendChild(anchor); 
+        anchor.click();
+        anchor.remove();
+        showToast('Deník byl uložen na disk jako JSON.', 'success');
+    }
+
+    function triggerImport() {
+        document.getElementById('importFile').value = ''; 
+        document.getElementById('importFile').click();
+    }
+
+    function importJSON(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = JSON.parse(e.target.result);
+                
+                // Zpětná kompatibilita pro staré uložené deníky
+                for(let i=1; i<=6; i++) {
+                    if (data[`ab${i}Uses`] !== undefined && data[`ab${i}TrackType`] === undefined) {
+                        data[`ab${i}TrackType`] = parseInt(data[`ab${i}Uses`]) > 0 ? 'uses' : 'none';
+                        data[`ab${i}TrackUses`] = data[`ab${i}Uses`];
+                    }
+                }
+
+                formFields.forEach(id => {
+                    if (data[id] !== undefined && document.getElementById(id)) {
+                        // Bezpečné načtení starých textových hodnot "Nabití" (např. "5-6" -> vezme si číslo 5)
+                        if (id.includes('TrackRecharge')) {
+                            const val = parseInt(data[id]);
+                            document.getElementById(id).value = isNaN(val) ? '' : val;
+                        } else {
+                            document.getElementById(id).value = data[id];
+                        }
+                        
+                        if (id.includes('TrackType')) {
+                            const num = id.replace(/[^\d]/g, '');
+                            toggleTrack(num);
+                        }
+                    }
+                });
+                
+                if (data.npcImageData || data.npcImageUrl) {
+                    updateImageUI(data.npcImageData || data.npcImageUrl);
+                } else {
+                    clearImage();
+                }
+
+                showToast('Deník byl úspěšně načten!', 'success');
+            } catch(err) {
+                showToast('Chyba! Soubor není platný export z Kovárny.', 'error');
+            }
+        };
+        reader.readAsText(file);
     }
 </script>
+
 </body>
 </html>
