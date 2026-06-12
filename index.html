@@ -635,16 +635,20 @@
                     </div>
 
                     <h2 class="section-title">Obrana a Zdraví</h2>
-                    <div class="grid grid-cols-4 gap-2 mb-3">
+                    <div class="grid grid-cols-6 gap-2 mb-3">
                         <div class="stat-box bg-gray-50">
                             <div class="text-[10px] text-gray-500 uppercase font-bold">Třída zbroje</div>
                             <div class="stat-value">${AC}</div>
                         </div>
                         <div class="stat-box bg-gray-50">
-                            <div class="text-[10px] text-gray-500 uppercase font-bold">Kapacita Zdraví</div>
+                            <div class="text-[10px] text-gray-500 uppercase font-bold">Max Zdraví</div>
                             <div class="stat-value text-red-600">${health}</div>
                         </div>
-                        <div class="stat-box bg-green-50 col-span-2 flex items-center justify-center">
+                        <div class="stat-box bg-white border border-gray-400">
+                            <div class="text-[10px] text-gray-400 uppercase font-bold">Aktuální</div>
+                            <div class="stat-value text-transparent">X</div>
+                        </div>
+                        <div class="stat-box bg-green-50 col-span-3 flex items-center justify-center">
                             <p class="text-[10px] text-green-800 leading-tight">
                                 Zhojení 1 až <b>${thresholdCrit - 1} HP</b> = <b>+1 Zdraví</b><br>
                                 Zhojení <b>${thresholdCrit} HP</b> a více = <b>+2 Zdraví</b>
